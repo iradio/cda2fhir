@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "properties": {
+    "templateId": {"type": "string", "xpath":"/ClinicalDocument/templateId/@root"},
+    "title": {"type": "string", "xpath": "/ClinicalDocument/title/text()"},
+    "effectiveTime": {
+      "type": "string",
+      "format": "date",
+      "xpath": "/ClinicalDocument/effectiveTime/@value"
+    },
+    "confidentialityCode": {"type": "string", "xpath": "/ClinicalDocument/confidentialityCode/@code"},
+    "id": {"type": "string", "xpath": "/ClinicalDocument/id/@extension"},
+    "setId": {"type": "string", "xpath": "/ClinicalDocument/setId/@extension"},
+    "versionNumber": {"type": "number", "xpath": "/ClinicalDocument/versionNumber/@value"},
+    "patient": {
+      "type": "object", "properties": {
+        "id": {"type": "string", "xpath": "//patientRole/id[1]/@extension",
+          "title": "Уникальный идентификатор пациента в МИС",
+          "description": "",
+          "required": true,
+        },
+        "SNILS": {"type": "string", "xpath": "//patientRole/id[2]/@extension"},
+        "cardType": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:IdentityCardType/@code"},
+        "cardSeries": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:Series/text()"},
+        "cardNumber": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:Number/text()"},
+        "cardIssueOrgName": {
+          "type": "string",
+          "xpath": "//patientRole/identity:IdentityDoc/identity:IssueOrgName/text()"
+        },
+        "cardIssueOrgCode": {
+          "type": "string",
+          "xpath": "//patientRole/identity:IdentityDoc/identity:IssueOrgCode/text()"
+        },
+        "cardIssueDate": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:IssueDate/@value"},
+        "family": {"type": "string", "xpath": "//patientRole/patient/name/family/text()"},
+        "name": {"type": "string", "xpath": "//patientRole/patient/name/given/text()"},
+        "patronymic": {"type": "string", "xpath": "//patientRole/patient/name/identity:Patronymic/text()"},
+        "gender": {"type": "string", "xpath": "//patientRole/patient/administrativeGenderCode/@code"},
+        "birthday": {
+          "type": "string",
+          "format": "date",
+          "xpath": "//patientRole/patient/birthTime/@value"
+        },
+      }
+    },
+    "DGN": {
+      "type": "array",
+      "xpath": "//code[@codeSystem=\"1.2.643.5.1.13.13.99.2.197\" and @code=\"DGN\"]/following-sibling::entry",
+      "items": {
+        "type": "object", "properties": {
+          "type": {"type": "string", "xpath": "observation/code/@code"},
+          "text": {"type": "string", "xpath": "observation/text/text()"},
+          "code": {"type": "string", "xpath": "observation/value/@code"},
+          "pregnancyTerm": {
+            "type": "number",
+            "xpath": "observation/code/following-sibling::entryRelationship/observation/code[@codeSystem=\"1.2.643.5.1.13.13.99.2.166\" and @code=\"8004\"]/following-sibling::value/translation/@value"
+          },
+          "pregnancyTermUnit": {
+            "type": "string",
+            "xpath": "observation/code/following-sibling::entryRelationship/observation/code[@codeSystem=\"1.2.643.5.1.13.13.99.2.166\" and @code=\"8004\"]/following-sibling::value/translation/@code"
+          }
+        }
+      }
+    }
+  }
+}

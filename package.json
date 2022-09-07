@@ -1,0 +1,27 @@
+{
+  "name": "xml2json",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://adn-tm@github.com/adn-tm/xml2json.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adn-tm/xml2json/issues"
+  },
+  "homepage": "https://github.com/adn-tm/xml2json#readme",
+  "dependencies": {
+    "camaro": "^6.2.0",
+    "command-line-parser": "^0.1.10",
+    "fs-extra": "^10.1.0",
+    "kafkajs": "^2.2.0",
+    "watch": "^1.0.2"
+  }
+}
