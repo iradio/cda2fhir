@@ -17,7 +17,7 @@
         "id": {"type": "string", "xpath": "//patientRole/id[1]/@extension",
           "title": "Уникальный идентификатор пациента в МИС",
           "description": "",
-          "required": true,
+          "required": true
         },
         "SNILS": {"type": "string", "xpath": "//patientRole/id[2]/@extension"},
         "cardType": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:IdentityCardType/@code"},
@@ -40,7 +40,7 @@
           "type": "string",
           "format": "date",
           "xpath": "//patientRole/patient/birthTime/@value"
-        },
+        }
       }
     },
     "DGN": {

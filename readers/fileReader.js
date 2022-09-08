@@ -31,5 +31,5 @@ class FileReader {
     }
 }
 
-module.exports={FileWriter: FileReader}
+module.exports={FileReader}
 

@@ -3,36 +3,35 @@ const path = require("path");
 const fs=require("fs-extra");
 const {KafkaWriter, FileWriter} = require("./writers");
 const {KafkaReader, FileReader} = require("./readers");
-// const jsonSchema = require("./example/schema.json");
 const {router, xml2json, buildJsonTemplate} = require("./convertor");
 
 const options= {
     config:{
         name:"config",
         short:"c",
-        envName:"CDA_CNV_SRC",
+        env:"CDA_CNV_SRC",
         default:"/home/node/src",
         description: "\t -c(onfig) config_dir \n\t\t path to schemas directory. Schemas names must built by pattern {{templateId}}.json`"
     },
     kafka:{
         name:"kafka",
         short:"k",
-        envName:"KAFKA_BROKERS",
+        env:"KAFKA_BROKERS",
         default:"localhost:9092",
-        description: "\t -k(afka) brokers\t\t Comma separated broker list, ex. 'kafka1:9092, kafka2:9092'. "
+        description: "\t -k(afka) brokers\n\t\t Comma separated broker list, ex. 'kafka1:9092, kafka2:9092'.\n\t\t By default Kafka broker not used \n "
     },
     group:{
         name: "group",
         short: "g",
-        envName: "KAFKA_CONSUMER_GROUP",
+        env: "KAFKA_CONSUMER_GROUP",
         default: "xml2json",
-        description: "\t -g(roup) consumer_group_name\n\t\t Consumer group name. Used if Kafka source mode enabled.\t\t By default Kafka broker not used \n"
+        description: "\t -g(roup) consumer_group_name\n\t\t Consumer group name. Used if Kafka source mode enabled."
     },
     src:{
         name: "src",
         short: "s",
         required:true,
-        envName: "KAFKA_SOURCE_TOPIC",
+        env: "KAFKA_SOURCE_TOPIC",
         default: "semd.raw",
         description: "\t -s(rc) topic\n\t\t Broker topic or exists directory for pulling input data"
     },
@@ -40,7 +39,7 @@ const options= {
         name: "dst",
         short: "d",
         required:true,
-        envName: "KAFKA_TARGET_TOPIC",
+        env: "KAFKA_TARGET_TOPIC",
         default: "semd.dep_{{templateId}}",
         description: "\t -d(st) destination\n\t\t Template for directory or Kafka topic for saving or pushing results. Use {{templateId}} variable in pattern"
     },
@@ -48,7 +47,7 @@ const options= {
         name: "error",
         short: "e",
         required:true,
-        envName: "KAFKA_DMQ_TOPIC",
+        env: "KAFKA_DMQ_TOPIC",
         default: "semd.dep_error",
         description: "\t -e(rror) error_topic_or_directory\n\t\t Broker topic or exists directory for invalid data"
     }
@@ -60,12 +59,12 @@ function readParams() {
         for (let p in options) {
             console.log(options[p].description);
             if (options[p].env)
-                console.log(`\t\t It can be passed by $${options[p].env} environment variable`);
+                console.log(`\t\tIt can be passed by $${options[p].env} environment variable`);
             if (options[p].default)
                 console.log(`\t\tDefault value is ${options[p].default}`);
             console.log(``);
-            process.exit(0);
         }
+        process.exit(0);
     }
 
     function _opt(cmd, option) {
@@ -139,7 +138,8 @@ async function init() {
 init().then(res=>{
     const {writer, reader, schemas, params}  = res;
     reader.init(async (msgValue, srcTopic, partition)=>{
-        let {data, topic, templateId} = await router(msgValue, params);
+        let {data, topic, templateId} = await router(msgValue.value, params);
+        console.log(`topic=${topic}, templateId=${templateId}`);
         if (!templateId || !schemas[templateId]) {
             console.warn(`Unknown templateId=${templateId} for sourceId=${msgValue.sourceId} from source=${srcTopic}`);
             templateId = undefined;

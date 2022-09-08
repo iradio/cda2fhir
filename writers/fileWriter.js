@@ -1,7 +1,7 @@
 const path = require("path");
 const fs=require("fs-extra");
 const {v4}=require("uuid");
-const moment=require("moment/moment");
+const moment=require("moment");
 
 class FileWriter {
     constructor(config) {

@@ -22,4 +22,4 @@ class KafkaReader {
     }
 }
 
-module.exports={KafkaWriter: KafkaReader}
+module.exports={KafkaReader}
