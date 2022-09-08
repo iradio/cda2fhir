@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  cda-generator:
+    image: bitnami/node:12
+    volumes:
+      - "./:/app:rw"
+      - "./dist:/mnt/dist:rw"
+    environment:
+      - KAFKA_SOURCE_TOPIC=./source
+      - KAFKA_TARGET_TOPIC=./target
+      - KAFKA_DMQ_TOPIC=./error
+      - CDA_CNV_SRC=./schemas
+    command: "sh -c 'npm install  && node index.js'"
+    # command: "sh"
+    tty: true

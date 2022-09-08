@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  cda-generator:
+    image: bitnami/node:12
+    volumes:
+      - "./:/app:rw"
+    environment:
+      - KAFKA_SOURCE_TOPIC=semd.raw
+      - KAFKA_TARGET_TOPIC=semd.json
+      - KAFKA_DMQ_TOPIC=dmq.cda2json 
+      - KAFKA_CONSUMER_GROUP=cda2json
+      - KAFKA_BROKERS=kafka:9092 # format: kafka-1:9092, kafka-2:9092
+      - CDA_CNV_SRC=./schemas
+    command: "sh -c 'npm install  && node index.js'"
+    # command: "sh"
+    tty: true
