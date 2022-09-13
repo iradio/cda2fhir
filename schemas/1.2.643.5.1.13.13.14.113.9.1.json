@@ -12,36 +12,32 @@
     "id": {"type": "string", "xpath": "/ClinicalDocument/id/@extension"},
     "setId": {"type": "string", "xpath": "/ClinicalDocument/setId/@extension"},
     "versionNumber": {"type": "number", "xpath": "/ClinicalDocument/versionNumber/@value"},
-    "patient": {
-      "type": "object", "properties": {
-        "id": {"type": "string", "xpath": "//patientRole/id[1]/@extension",
-          "title": "Уникальный идентификатор пациента в МИС",
-          "description": "",
-          "required": true
-        },
-        "SNILS": {"type": "string", "xpath": "//patientRole/id[2]/@extension"},
-        "cardType": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:IdentityCardType/@code"},
-        "cardSeries": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:Series/text()"},
-        "cardNumber": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:Number/text()"},
-        "cardIssueOrgName": {
-          "type": "string",
-          "xpath": "//patientRole/identity:IdentityDoc/identity:IssueOrgName/text()"
-        },
-        "cardIssueOrgCode": {
-          "type": "string",
-          "xpath": "//patientRole/identity:IdentityDoc/identity:IssueOrgCode/text()"
-        },
-        "cardIssueDate": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:IssueDate/@value"},
-        "family": {"type": "string", "xpath": "//patientRole/patient/name/family/text()"},
-        "name": {"type": "string", "xpath": "//patientRole/patient/name/given/text()"},
-        "patronymic": {"type": "string", "xpath": "//patientRole/patient/name/identity:Patronymic/text()"},
-        "gender": {"type": "string", "xpath": "//patientRole/patient/administrativeGenderCode/@code"},
-        "birthday": {
-          "type": "string",
-          "format": "date",
-          "xpath": "//patientRole/patient/birthTime/@value"
-        }
-      }
+    "patientId": {"type": "string", "xpath": "//patientRole/id[1]/@extension",
+      "title": "Уникальный идентификатор пациента в МИС",
+      "description": "",
+      "required": true
+    },
+    "patientSNILS": {"type": "string", "xpath": "//patientRole/id[2]/@extension"},
+    "patientCardType": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:IdentityCardType/@code"},
+    "patientCardSeries": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:Series/text()"},
+    "patientCardNumber": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:Number/text()"},
+    "patientCardIssueOrgName": {
+      "type": "string",
+      "xpath": "//patientRole/identity:IdentityDoc/identity:IssueOrgName/text()"
+    },
+    "patientCardIssueOrgCode": {
+      "type": "string",
+      "xpath": "//patientRole/identity:IdentityDoc/identity:IssueOrgCode/text()"
+    },
+    "patientCardIssueDate": {"type": "string", "xpath": "//patientRole/identity:IdentityDoc/identity:IssueDate/@value"},
+    "patientFamilyName": {"type": "string", "xpath": "//patientRole/patient/name/family/text()"},
+    "patientGivenName": {"type": "string", "xpath": "//patientRole/patient/name/given/text()"},
+    "patientPatronymicName": {"type": "string", "xpath": "//patientRole/patient/name/identity:Patronymic/text()"},
+    "patientGender": {"type": "string", "xpath": "//patientRole/patient/administrativeGenderCode/@code"},
+    "patientBirthday": {
+      "type": "string",
+      "format": "date",
+      "xpath": "//patientRole/patient/birthTime/@value"
     },
     "DGN": {
       "type": "array",
