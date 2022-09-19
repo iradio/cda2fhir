@@ -1,0 +1,48 @@
+{
+  "config":{
+    "name":"config",
+    "short":"c",
+    "env":"CDA_CNV_SRC",
+    "default":"/home/node/src",
+    "description": "\t -c(onfig) schema fiels directory or schema registry URL \n\t\t - or path to schemas directory (relative or file://). Schemas names must built by pattern {{templateId}}.json \n\t\t - or http:/registry:port/version"
+
+  },
+  "kafka":{
+    "name":"kafka",
+    "short":"k",
+    "env":"KAFKA_BROKERS",
+    "default":"localhost:9092",
+    "description": "\t -k(afka) brokers\n\t\t Comma separated broker list, ex. 'kafka1:9092, kafka2:9092'.\n\t\t By default Kafka broker not used \n "
+  },
+  "group":{
+    "name": "group",
+    "short": "g",
+    "env": "KAFKA_CONSUMER_GROUP",
+    "default": "xml2json",
+    "description": "\t -g(roup) consumer_group_name\n\t\t Consumer group name. Used if Kafka source mode enabled."
+  },
+  "src":{
+    "name": "src",
+    "short": "s",
+    "required":true,
+    "env": "KAFKA_SOURCE_TOPIC",
+    "default": "semd.raw",
+    "description": "\t -s(rc) topic\n\t\t Broker topic or exists directory for pulling input data"
+  },
+  "dst":{
+    "name": "dst",
+    "short": "d",
+    "required":true,
+    "env": "KAFKA_TARGET_TOPIC",
+    "default": "semd.dep_{{templateId}}",
+    "description": "\t -d(st) destination\n\t\t Template for directory or Kafka topic for saving or pushing results. Use {{templateId}} variable in pattern"
+  },
+  "error":{
+    "name": "error",
+    "short": "e",
+    "required":true,
+    "env": "KAFKA_DMQ_TOPIC",
+    "default": "semd.dep_error",
+    "description": "\t -e(rror) error_topic_or_directory\n\t\t Broker topic or exists directory for invalid data"
+  }
+}

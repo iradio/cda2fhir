@@ -27,7 +27,7 @@ node index  -k localhost:9092 -s tpk -g xml2json -d jtpk.{{templateId}} -e etpk 
 node index  -h
 ```
 
-- `- KAFKA_BROKERS=kafka:9092,kafka-1:9092`  - строка с адресами Kafka broket
+- `- KAFKA_BROKERS=kafka:9092,kafka-1:9092`  - строка с адресами Kafka
 - `- KAFKA_SOURCE_TOPIC=semd.raw` - имя топика, из которого получать XML
 - `- KAFKA_TARGET_TOPIC=semd.dep_{{templateId}}` - имя топика, в который передавать JSON маска выходного топика. Если имя топика содержит {{templateId}} - писать в разные выходные топики по имени, формируемом с маской из трех последних разрядов templateId СЭМД
 - `- KAFKA_DMQ_TOPIC=dmq.cda` - имя топика, для сообщений, при обработке которых возникла ошибка

@@ -1,89 +1,15 @@
-const argsProcessor = require('command-line-parser');
 const path = require("path");
 const fs=require("fs-extra");
 const {KafkaWriter, FileWriter} = require("./writers");
 const {KafkaReader, FileReader} = require("./readers");
-const {router, xml2json, buildJsonTemplate} = require("./convertor");
-
-const options= {
-    config:{
-        name:"config",
-        short:"c",
-        env:"CDA_CNV_SRC",
-        default:"/home/node/src",
-        description: "\t -c(onfig) config_dir \n\t\t path to schemas directory. Schemas names must built by pattern {{templateId}}.json`"
-    },
-    kafka:{
-        name:"kafka",
-        short:"k",
-        env:"KAFKA_BROKERS",
-        default:"localhost:9092",
-        description: "\t -k(afka) brokers\n\t\t Comma separated broker list, ex. 'kafka1:9092, kafka2:9092'.\n\t\t By default Kafka broker not used \n "
-    },
-    group:{
-        name: "group",
-        short: "g",
-        env: "KAFKA_CONSUMER_GROUP",
-        default: "xml2json",
-        description: "\t -g(roup) consumer_group_name\n\t\t Consumer group name. Used if Kafka source mode enabled."
-    },
-    src:{
-        name: "src",
-        short: "s",
-        required:true,
-        env: "KAFKA_SOURCE_TOPIC",
-        default: "semd.raw",
-        description: "\t -s(rc) topic\n\t\t Broker topic or exists directory for pulling input data"
-    },
-    dst:{
-        name: "dst",
-        short: "d",
-        required:true,
-        env: "KAFKA_TARGET_TOPIC",
-        default: "semd.dep_{{templateId}}",
-        description: "\t -d(st) destination\n\t\t Template for directory or Kafka topic for saving or pushing results. Use {{templateId}} variable in pattern"
-    },
-    error:{
-        name: "error",
-        short: "e",
-        required:true,
-        env: "KAFKA_DMQ_TOPIC",
-        default: "semd.dep_error",
-        description: "\t -e(rror) error_topic_or_directory\n\t\t Broker topic or exists directory for invalid data"
-    }
-}
-function readParams() {
-    const cmd = argsProcessor() || {};
-    if (cmd.h || cmd.help) {
-        console.log("XML 2 JSON stream convertor. Use with parameters:");
-        for (let p in options) {
-            console.log(options[p].description);
-            if (options[p].env)
-                console.log(`\t\tIt can be passed by $${options[p].env} environment variable`);
-            if (options[p].default)
-                console.log(`\t\tDefault value is ${options[p].default}`);
-            console.log(``);
-        }
-        process.exit(0);
-    }
-
-    function _opt(cmd, option) {
-        return cmd[option.name] || cmd[option.short] || (option.env ? process.env[option.env] : undefined) || option.default;
-    }
-
-    const params = {};
-    for (let p in options) {
-        params[p] = _opt(cmd, options[p])
-        if (!params[p] && options[p].requred) {
-            console.log(`Undefined required parameter: ${p}. Run with -h for help`);
-            process.exit(1);
-        }
-    }
-    return params;
-}
+const {router, xml2json, buildJsonTemplate} = require("./schemaSource/convertor");
+const params = require("./config");
+const LocalSchemaSource = require("./schemaSource/local.js");
+const RegistrySchemaSource = require("./schemaSource/registry.js");
+const {URL} = require("url");
 
 async function init() {
-    const params = readParams();
+
     let writer, reader;
     const schemas={};
     if (params.kafka) {
@@ -113,41 +39,43 @@ async function init() {
 
         reader = new FileReader({source: path.resolve(__dirname, params.src) })
     }
-
-    const schemaPath = path.resolve(__dirname, params.config);
+    const schemaUrl = new URL(params.config);
+    let schemaSource;
     try {
-        const files = fs.readdirSync(schemaPath);
-        files.forEach(fn => {
-            try {
-                if (path.extname(fn).toLowerCase() === ".json") {
-                    schemas[path.basename(fn, ".json")] = buildJsonTemplate(fs.readJsonSync(path.join(schemaPath, fn)));
-                }
-            } catch (e) {
-                console.error(`Error reading schema file ${fn} with error\n ${e.message}`);
-                process.exit(4);
-            }
-        })
-
-    } catch(e) {
-            console.error(`Error reading schema files from directory ${schemaPath}`);
-            process.exit(4);
+        if (!schemaUrl.protocol || schemaUrl.protocol==="file:") {
+            const schemaPath = schemaUrl.protocol==="file:" ? params.config : path.resolve(__dirname, params.config);
+            schemaSource = new LocalSchemaSource(schemaPath);
+        } else {
+            schemaSource = new RegistrySchemaSource(params.config);
+        }
+    } catch (e) {
+        console.error(`Error reading schema files from directory ${schemaPath}`);
+        process.exit(4);
     }
-    return {writer, reader, schemas, params}
+
+    return {writer, reader, schemaSource, params}
 }
 
 init().then(res=>{
-    const {writer, reader, schemas, params}  = res;
+    const {writer, reader, schemaSource, params}  = res;
     reader.init(async (msgValue, srcTopic, partition)=>{
+        msgValue = msgValue || {};
         let {data, topic, templateId} = await router(msgValue.value, params);
         console.log(`topic=${topic}, templateId=${templateId}`);
-        if (!templateId || !schemas[templateId]) {
+        if (!templateId) {
             console.warn(`Unknown templateId=${templateId} for sourceId=${msgValue.sourceId} from source=${srcTopic}`);
+            templateId = undefined;
+            topic=params.error;
+        }
+        const schema = await schemaSource.get(templateId);
+        if (!schema) {
+            console.warn(`Unknown schema for ${templateId} for sourceId=${msgValue.sourceId} from source=${srcTopic}`);
             templateId = undefined;
             topic=params.error;
         }
         try {
             if (templateId) {
-                data = await xml2json(data, schemas[templateId])
+                data = await xml2json(data, schema)
             }
             await writer.write(data, topic);
         } catch(e1) {

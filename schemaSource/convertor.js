@@ -1,8 +1,12 @@
 const { transform } = require('camaro')
-// const Ajv = require("ajv");
-// const addFormats = require("ajv-formats")
-// const ajv = new Ajv({coerceTypes: true, strict: false})
-// addFormats(ajv);
+const Ajv = require("ajv");
+const addFormats = require("ajv-formats")
+const ajv = new Ajv({coerceTypes: true, strict: false})
+addFormats(ajv);
+const { plugin }  = require ('ajv-moment')
+const moment  =require('moment');
+plugin({ ajv, moment });
+
 
 function buildJsonTemplate(schema) {
     function _node(node, pkey) {
@@ -23,7 +27,7 @@ function buildJsonTemplate(schema) {
             return `${node.type}(${node.xpath})`
         }
         if (node.type === "boolean") {
-            const asTrue = node.trueValue || "1";
+            const asTrue = node.trueValue || "true";
             return `${node.type}(${node.xpath} = "${asTrue}")`
         }
     }
@@ -56,12 +60,18 @@ async function router(msgValue, config) {
     try {
         const r = await transform(val, DOC_TYPE_TEMPLATE);
         console.log(r);
-        if (!r.templateId) return {topic: config.error, data:`Message ${val.code_by_emdr} XML document haven't value for doctype field`};
-        const topic = config.dst.replace(`{{templateId}}`, r.templateId);
+        const schemaIds=schemaIdFromOID(r.templateId);
+        if (!r.templateId || !schemaIds) return {topic: config.error, data:`Message ${val.code_by_emdr} XML document haven't value for doctype field`};
+        const topic = config.dst.replace(`{{templateId}}`, r.templateId).replace(`{{id}}`, schemaIds.id).replace(`{{version}}`, schemaIds.version);
         return {topic, templateId:r.templateId, data: val}
     } catch(e) {
         return {topic: config.error,  data:"Message value is not a valid JSON document:"+e.message};
     }
 }
 
-module.exports = {buildJsonTemplate, router, xml2json: transform}
+function schemaIdFromOID(oid) {
+    const p = (oid || "").split(".");
+    if (p.length<3) return;
+    return {id:p[p.length-3], version:[p.length-1]}
+}
+module.exports = {buildJsonTemplate, router, xml2json: transform, schemaIdFromOID}

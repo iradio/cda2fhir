@@ -35,10 +35,15 @@
         "family": {"type": "string", "xpath": "//patientRole/patient/name/family/text()"},
         "name": {"type": "string", "xpath": "//patientRole/patient/name/given/text()"},
         "patronymic": {"type": "string", "xpath": "//patientRole/patient/name/identity:Patronymic/text()"},
-        "gender": {"type": "string", "xpath": "//patientRole/patient/administrativeGenderCode/@code"},
+        "gender": {
+          "type": "string",
+          "xpath": "//patientRole/patient/administrativeGenderCode/@code",
+          "vocabulary": { "$ref": "#/$datasources/NSI_gender", "path": "code" }
+        },
         "birthday": {
           "type": "string",
           "format": "date",
+          "formats": ["YYYY", "YYYYMM", "YYYYMMDD", "YYYYMMDD"],
           "xpath": "//patientRole/patient/birthTime/@value"
         }
       }
@@ -60,6 +65,17 @@
             "xpath": "observation/code/following-sibling::entryRelationship/observation/code[@codeSystem=\"1.2.643.5.1.13.13.99.2.166\" and @code=\"8004\"]/following-sibling::value/translation/@code"
           }
         }
+      }
+    }
+  },
+  "$datasources": {
+    "NSI_gender": {
+      "URI": "./gender.csv",
+      "format": "csv",
+      "formatOptions": {
+        "headers": true,
+        "separator" : ",",
+        "columns": ["code", "name"]
       }
     }
   }
