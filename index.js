@@ -4,8 +4,8 @@ const {KafkaWriter, FileWriter} = require("./writers");
 const {KafkaReader, FileReader} = require("./readers");
 const {router, xml2json, buildJsonTemplate} = require("./schemaSource/convertor");
 const params = require("./config");
-const LocalSchemaSource = require("./schemaSource/local.js");
-const RegistrySchemaSource = require("./schemaSource/registry.js");
+const {LocalSchemaSource} = require("./schemaSource/local.js");
+const {RegistrySchemaSource} = require("./schemaSource/registry.js");
 const {URL} = require("url");
 
 async function init() {
@@ -45,13 +45,11 @@ async function init() {
         if (!schemaUrl.protocol || schemaUrl.protocol==="file:") {
             const schemaPath = schemaUrl.protocol==="file:" ? params.config : path.resolve(__dirname, params.config);
             schemaSource = new LocalSchemaSource(schemaPath);
-            console.warn(`Local schema storage is used. Schema files was read from directory ${schemaPath}`, schemaUrl.protocol);
         } else {
             schemaSource = new RegistrySchemaSource(params.config);
-            console.warn(`Schema registry service is used by URL ${params.config}`);
         }
     } catch (e) {
-        console.error(`Error reading schema files from directory ${schemaUrl}`);
+        console.error(`Error reading schema files from ${params.config}`, e);
         process.exit(4);
     }
 

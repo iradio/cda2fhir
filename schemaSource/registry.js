@@ -13,6 +13,7 @@ class RegistrySchemaSource {
         try {
             // TODO: build id, version from templateId
             const urlParts= schemaIdFromOID(templateId);
+            console.warn("Schema getting error:", templateId, urlParts.id, urlParts.version);
             if (!urlParts) {
                 console.warn("Schema getting error. Bad templateId: "+templateId);
                 return;
@@ -23,7 +24,7 @@ class RegistrySchemaSource {
                 this.schemas[templateId] = buildJsonTemplate(data);
                 return {...(this.schemas[templateId]) };
             }
-            console.warn("Schema getting error:", templateId, response.status);
+            console.warn("Schema getting error:", templateId, response.status, templateId, `${urlParts.id}/${urlParts.version}`);
         } catch (e) {
             console.error(e);
         }

@@ -72,6 +72,6 @@ async function router(msgValue, config) {
 function schemaIdFromOID(oid) {
     const p = (oid || "").split(".");
     if (p.length<3) return;
-    return {id:p[p.length-3], version:[p.length-1]}
+    return {id:p[p.length-3], version:p[p.length-1]}
 }
 module.exports = {buildJsonTemplate, router, xml2json: transform, schemaIdFromOID}
