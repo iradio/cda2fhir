@@ -21,6 +21,12 @@ function buildJsonTemplate(schema) {
             return r;
         }
         if (node.type === "string") {
+            if (node.xml_type === "TS" || (node.format==="date-time") || (node.format==="datetime")) {
+                return `datetime(${node.xpath})`;
+            }
+            if ((node.format==="date") || (node.format==="time")) {
+                return `${node.format}(${node.xpath})`;
+            }
             return node.xpath;
         }
         if (node.type === "number") {
