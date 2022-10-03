@@ -1,0 +1,102 @@
+{
+  "_from": "git+https://github.com/adn-tm/camaro.git",
+  "_id": "camaro@6.2.0",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/camaro",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "camaro@git+https://github.com/adn-tm/camaro.git",
+    "name": "camaro",
+    "escapedName": "camaro",
+    "rawSpec": "git+https://github.com/adn-tm/camaro.git",
+    "saveSpec": "git+https://github.com/adn-tm/camaro.git",
+    "fetchSpec": "https://github.com/adn-tm/camaro.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "git+https://github.com/adn-tm/camaro.git#5edc39d7d19c1120804670829cdb190e97ae53ae",
+  "_spec": "camaro@git+https://github.com/adn-tm/camaro.git",
+  "_where": "/mnt/c/Git/mz/xml2json",
+  "author": {
+    "name": "Tuan Anh Tran",
+    "email": "me@tuananh.org",
+    "url": "https://tuananh.org"
+  },
+  "bugs": {
+    "url": "https://github.com/tuananh/camaro/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "piscina": "^3.2.0"
+  },
+  "deprecated": false,
+  "description": "Transforming XML to JSON using Node.js binding to native pugixml parser library",
+  "devDependencies": {
+    "fast-xml-parser": "^4.0.1",
+    "gen-esm-wrapper": "^1.1.3",
+    "napa": "^3.0.0",
+    "tape": "^5.4.0",
+    "txml": "^5.1.1",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.4.23"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "import": "./index.mjs"
+    },
+    "./": "./"
+  },
+  "files": [
+    "index.js",
+    "index.mjs",
+    "worker.js",
+    "dist/camaro.js",
+    "dist/camaro.wasm",
+    "index.d.ts"
+  ],
+  "homepage": "https://github.com/tuananh/camaro",
+  "keywords": [
+    "xpath",
+    "json",
+    "transform",
+    "pugixml",
+    "xml",
+    "parser",
+    "n-api",
+    "xml2json",
+    "webassembly",
+    "wasm"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "camaro",
+  "napa": {
+    "pugixml": "tuananh/pugixml#develop",
+    "json": "nlohmann/json#develop",
+    "fifo_map": "nlohmann/fifo_map#master"
+  },
+  "napa-config": {
+    "cache": false
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuananh/camaro.git"
+  },
+  "scripts": {
+    "bench": "node benchmark/transform.js",
+    "build": "docker run --rm -v $(pwd):/src emscripten/emsdk ./build.sh",
+    "gen-esm": "gen-esm-wrapper . ./index.mjs",
+    "install-deps": "napa",
+    "test": "tape test/*.test.js"
+  },
+  "typings": "index.d.ts",
+  "version": "6.2.0"
+}
