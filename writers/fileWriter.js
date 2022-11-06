@@ -9,7 +9,8 @@ class FileWriter {
             destination: '~/CDA-results',
             ...(config || {})
         };
-        this.folder = path.resolve(__dirname, this.config.destination);
+        this.folder = this.config.destination;
+        console.log("Write files to folder: ", this.folder)
     }
     async init() {
         return new Promise((resolve, reject)=>{
@@ -19,7 +20,8 @@ class FileWriter {
             })
         })
     }
-    async write(data, subFolder) {
+    async write(data) {
+        const subFolder = ""
         const guid = v4();
         const fn = guid + '-' + moment().format("YYYY-MM-DD") + ".json";
         const folder = subFolder ? path.join(this.folder, subFolder) : this.folder;

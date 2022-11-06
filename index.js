@@ -39,18 +39,17 @@ async function init() {
 
         reader = new FileReader({source: path.resolve(__dirname, params.src) })
     }
-    const schemaUrl = new URL(params.config);
     let schemaSource;
     try {
+        const schemaUrl = new URL(params.config);
         if (!schemaUrl.protocol || schemaUrl.protocol==="file:") {
             const schemaPath = schemaUrl.protocol==="file:" ? params.config : path.resolve(__dirname, params.config);
-            schemaSource = new LocalSchemaSource(schemaPath);
+            schemaSource = new LocalSchemaSource(path.resolve(__dirname, params.config))
         } else {
             schemaSource = new RegistrySchemaSource(params.config);
         }
     } catch (e) {
-        console.error(`Error reading schema files from ${params.config}`, e);
-        process.exit(4);
+        schemaSource = new LocalSchemaSource(path.resolve(__dirname, params.config));
     }
 
     return {writer, reader, schemaSource, params}
@@ -61,7 +60,7 @@ init().then(res=>{
     reader.init(async (msgValue, srcTopic, partition)=>{
         msgValue = msgValue || {};
         let {data, topic, templateId} = await router(msgValue.value, params);
-        console.log(`topic=${topic}, templateId=${templateId}`);
+        // console.log(typeof msgValue, `${srcTopic} topic=${topic}, templateId=${templateId}`);
         if (!templateId) {
             console.warn(`Unknown templateId=${templateId} for sourceId=${msgValue.sourceId} from source=${srcTopic}`);
             templateId = undefined;
@@ -73,6 +72,7 @@ init().then(res=>{
             templateId = undefined;
             topic=params.error;
         }
+        console.log(`scheme ready for templateId=${templateId}`, schema);
         try {
             if (templateId) {
                 data = await xml2json(data, schema)
