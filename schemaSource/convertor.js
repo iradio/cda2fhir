@@ -46,7 +46,7 @@ async function router(msgValue, config) {
     }
 
     if (!msgValue) return {topic: config.error, data:"Empty message received"};
-    let val;
+    let val = msgValue;
     if (msgValue instanceof  Buffer) {
         val = msgValue.toString();
     }

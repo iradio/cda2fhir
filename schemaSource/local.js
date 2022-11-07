@@ -5,6 +5,7 @@ const {buildJsonTemplate} = require("./convertor.js");
 class LocalSchemaSource {
     constructor(schemaPath) {
         this.schemas = {};
+        console.log("Read schemas from folder: ", schemaPath)
         const files = fs.readdirSync(schemaPath);
         files.forEach(fn => {
             if (path.extname(fn).toLowerCase() === ".json") {
